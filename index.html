@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#6750A4" />
+  <title>Material You Start</title>
+
+  <!-- Google Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:FILL@1" rel="stylesheet">
+
+  <!-- GSAP (animations) -->
+  <script defer src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+
+  <style>
+    /* ---------- Material 3 palette (customize tones) ---------- */
+    :root{
+      --primary: #6750A4;
+      --on-primary: #FFFFFF;
+      --secondary: #625B71;
+      --tertiary: #7D5260;
+      --surface: #FFFBFE;
+      --surface-variant:#E7E0EC;
+      --on-surface:#1C1B1F;
+      --outline:#79747E;
+      --shadow: 0 8px 24px rgba(0,0,0,.08);
+      --radius: 18px;
+      --radius-lg: 28px;
+      --gap: 14px;
+    }
+    @media (prefers-color-scheme: dark){
+      :root{
+        --primary:#D0BCFF;
+        --on-primary:#2B2141;
+        --secondary:#CCC2DC;
+        --tertiary:#EFB8C8;
+        --surface:#141218;
+        --surface-variant:#49454F;
+        --on-surface:#E6E1E5;
+        --outline:#948F99;
+        --shadow: 0 14px 28px rgba(0,0,0,.45);
+      }
+    }
+
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family:Roboto,system-ui,-apple-system,Segoe UI,Arial;
+      background:radial-gradient(1200px 1200px at 20% 10%, rgba(103,80,164,.18), transparent 60%),
+                 radial-gradient(1000px 1000px at 100% 100%, rgba(125,82,96,.16), transparent 60%),
+                 var(--surface);
+      color:var(--on-surface);
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ---------- Layout: header / grid / dock ---------- */
+    .wrap{
+      height:100dvh;
+      padding: env(safe-area-inset-top) 16px calc(16px + env(safe-area-inset-bottom));
+      display:grid;
+      grid-template-rows:auto 1fr auto;
+      gap:var(--gap);
+      max-width:480px;
+      margin:0 auto;
+    }
+
+    header{
+      border-radius:var(--radius-lg);
+      padding:14px 18px;
+      background:linear-gradient(180deg, var(--primary), #5a46a2);
+      color:var(--on-primary);
+      box-shadow:var(--shadow);
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    .greet{font-size:1.1rem;font-weight:700;letter-spacing:.2px}
+    .date{opacity:.9;font-size:.95rem}
+
+    .grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      grid-auto-rows:minmax(120px, 1fr);
+      gap:var(--gap);
+    }
+
+    .card{
+      background:rgba(255,255,255,.82);
+      backdrop-filter:saturate(160%) blur(16px);
+      border:1px solid var(--surface-variant);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      padding:14px;
+      overflow:hidden;
+    }
+    @media (prefers-color-scheme: dark){
+      .card{background:rgba(28,27,31,.6)}
+    }
+
+    /* Clock card spans full width */
+    .clock-card{ grid-column:1/-1; display:flex; align-items:center; justify-content:space-between; }
+    .time{font-size:3rem; font-weight:700; line-height:1}
+    .ampm{font-size:.95rem; opacity:.8; margin-left:8px}
+    .subline{margin-top:6px; font-size:.95rem; opacity:.85}
+
+    /* Weather */
+    .weather{
+      display:grid; grid-template-columns:auto 1fr; gap:10px; align-items:center;
+    }
+    .weather .icon{font-size:42px}
+    .temp{font-size:1.6rem; font-weight:700}
+    .city{font-size:.95rem; opacity:.85}
+    .mini{font-size:.85rem; opacity:.75}
+
+    /* Quick actions */
+    .quick{
+      display:grid; grid-template-columns:repeat(2,1fr); gap:10px;
+    }
+    .action{
+      display:flex; align-items:center; gap:10px;
+      padding:12px; border-radius:14px; text-decoration:none; color:inherit;
+      border:1px dashed var(--surface-variant);
+    }
+    .chip{font:500 0.95rem/1 Roboto, sans-serif}
+
+    /* Dock */
+    .dock{
+      display:flex; gap:16px; justify-content:space-between; align-items:center;
+      background:rgba(255,255,255,.9);
+      border:1px solid var(--surface-variant);
+      border-radius:24px;
+      padding:10px 12px;
+      box-shadow:var(--shadow);
+      position:relative;
+    }
+    @media (prefers-color-scheme: dark){ .dock{background:rgba(28,27,31,.7)} }
+
+    .dock a{
+      width:54px; height:54px; border-radius:16px;
+      display:grid; place-items:center; text-decoration:none; color:var(--on-surface);
+      background:linear-gradient(180deg, rgba(255,255,255,.6), rgba(255,255,255,.35));
+      border:1px solid var(--surface-variant);
+      overflow:hidden;
+    }
+    @media (prefers-color-scheme: dark){
+      .dock a{background:linear-gradient(180deg, rgba(40,38,44,.6), rgba(40,38,44,.35))}
+    }
+    .dock img{ width:28px; height:28px }
+
+    /* Material icon helper */
+    .mi{font-family:'Material Symbols Rounded'; font-variation-settings:'FILL' 1, 'wght' 700, 'GRAD' 0, 'opsz' 48; }
+
+    /* Small helpers */
+    .row{display:flex; align-items:center}
+    .space{flex:1}
+    button, .btn{
+      border:none; background:var(--primary); color:var(--on-primary);
+      padding:10px 14px; border-radius:12px; font-weight:600;
+      box-shadow:var(--shadow); text-decoration:none;
+    }
+    .ghost{background:transparent; border:1px solid var(--outline); color:var(--on-surface)}
+    .muted{opacity:.7}
+    .hide{display:none}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <!-- Top bar -->
+    <header id="topbar">
+      <div class="greet" id="greet">Hey!</div>
+      <div class="date" id="dateText">—</div>
+    </header>
+
+    <!-- Main grid -->
+    <section class="grid">
+      <!-- CLOCK -->
+      <article class="card clock-card" id="clockCard">
+        <div>
+          <div class="row">
+            <div class="time" id="time">00:00:00</div>
+            <div class="ampm" id="ampm">AM</div>
+          </div>
+          <div class="subline muted" id="subline">—</div>
+        </div>
+        <a class="btn" href="https://www.google.com" aria-label="Search Google">Search</a>
+      </article>
+
+      <!-- WEATHER -->
+      <article class="card" id="weatherCard">
+        <div class="weather">
+          <div class="icon mi" id="wIcon">cloud</div>
+          <div>
+            <div class="temp" id="temp">--°</div>
+            <div class="city" id="city">Fetching location…</div>
+            <div class="mini" id="wMini">—</div>
+          </div>
+        </div>
+        <div class="row" style="margin-top:10px; gap:10px;">
+          <button class="ghost" id="changeCityBtn" type="button">Set City</button>
+          <div class="muted" id="provider">OpenWeatherMap</div>
+          <div class="space"></div>
+        </div>
+      </article>
+
+      <!-- QUICK ACTIONS -->
+      <article class="card">
+        <div class="quick">
+          <a class="action" href="https://mail.google.com">
+            <span class="mi">mail</span><span class="chip">Gmail</span>
+          </a>
+          <a class="action" href="https://calendar.google.com">
+            <span class="mi">calendar_month</span><span class="chip">Calendar</span>
+          </a>
+          <a class="action" href="https://photos.google.com">
+            <span class="mi">photo_library</span><span class="chip">Photos</span>
+          </a>
+          <a class="action" href="https://drive.google.com">
+            <span class="mi">drive_file_move</span><span class="chip">Drive</span>
+          </a>
+        </div>
+      </article>
+
+      <!-- NOTES / LINKS -->
+      <article class="card">
+        <div class="row" style="gap:10px; margin-bottom:8px;">
+          <span class="mi">bookmark</span><strong>Quick Links</strong>
+        </div>
+        <div class="mini muted">Edit these in the HTML.</div>
+        <ul style="margin:10px 0 0 18px; line-height:1.8;">
+          <li><a href="https://news.google.com" target="_self">News</a></li>
+          <li><a href="https://chat.openai.com" target="_self">ChatGPT</a></li>
+          <li><a href="https://github.com" target="_self">GitHub</a></li>
+        </ul>
+      </article>
+    </section>
+
+    <!-- Dock -->
+    <nav class="dock" id="dock">
+      <a href="https://www.youtube.com" aria-label="YouTube"><img alt="" src="https://img.icons8.com/fluency-systems-regular/96/youtube-play.png"></a>
+      <a href="https://www.instagram.com" aria-label="Instagram"><img alt="" src="https://img.icons8.com/fluency-systems-regular/96/instagram-new.png"></a>
+      <a href="https://www.google.com" aria-label="Google"><img alt="" src="https://img.icons8.com/fluency-systems-regular/96/google-logo.png"></a>
+      <a href="https://web.whatsapp.com" aria-label="WhatsApp Web"><img alt="" src="https://img.icons8.com/fluency-systems-regular/96/whatsapp.png"></a>
+      <a href="https://mail.google.com" aria-label="Gmail"><img alt="" src="https://img.icons8.com/fluency-systems-regular/96/gmail.png"></a>
+    </nav>
+  </div>
+
+  <script>
+    /* ------------------ CLOCK & GREET ------------------ */
+    const timeEl = document.getElementById('time');
+    const ampmEl = document.getElementById('ampm');
+    const subline = document.getElementById('subline');
+    const dateText = document.getElementById('dateText');
+    const greetEl = document.getElementById('greet');
+
+    function pad(n){return String(n).padStart(2,'0')}
+
+    function tick(){
+      const d = new Date();
+      let h = d.getHours(), m = d.getMinutes(), s = d.getSeconds();
+      const ampm = h >= 12 ? 'PM' : 'AM';
+      const hour12 = ((h + 11) % 12) + 1;
+      timeEl.textContent = `${pad(hour12)}:${pad(m)}:${pad(s)}`;
+      ampmEl.textContent = ampm;
+
+      const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+      dateText.textContent = `${days[d.getDay()]}, ${months[d.getMonth()]} ${d.getDate()}`;
+      subline.textContent = `Battery: ${navigator?.getBattery ? '' : '—'}`;
+
+      // Greeting
+      const hour = d.getHours();
+      const g = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+      greetEl.textContent = `${g}`;
+    }
+    setInterval(tick, 1000); tick();
+
+    /* ------------------ WEATHER ------------------ */
+    const API_KEY = 'PUT_YOUR_OPENWEATHERMAP_KEY_HERE'; // <-- add your key
+    const cityEl = document.getElementById('city');
+    const tempEl = document.getElementById('temp');
+    const miniEl = document.getElementById('wMini');
+    const iconEl = document.getElementById('wIcon');
+    const changeCityBtn = document.getElementById('changeCityBtn');
+
+    function iconFor(code){
+      // simple mapping to Material symbols
+      if(code>=200 && code<300) return 'thunderstorm';
+      if(code>=300 && code<600) return 'rainy';
+      if(code>=600 && code<700) return 'ac_unit';
+      if(code===800) return 'wb_sunny';
+      if(code>800) return 'cloud';
+      return 'partly_cloudy_day';
+    }
+
+    async function fetchWeatherByCoords(lat, lon){
+      const url = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&units=metric&appid=${API_KEY}`;
+      const r = await fetch(url);
+      if(!r.ok) throw new Error('Weather error');
+      const j = await r.json();
+      renderWeather(j);
+      localStorage.setItem('lastCity', j.name);
+    }
+
+    async function fetchWeatherByCity(city){
+      const url = `https://api.openweathermap.org/data/2.5/weather?q=${encodeURIComponent(city)}&units=metric&appid=${API_KEY}`;
+      const r = await fetch(url);
+      if(!r.ok) throw new Error('City not found');
+      const j = await r.json();
+      renderWeather(j);
+      localStorage.setItem('lastCity', j.name);
+    }
+
+    function renderWeather(j){
+      const c = Math.round(j.main.temp);
+      const feels = Math.round(j.main.feels_like);
+      const desc = j.weather?.[0]?.description ?? '';
+      const code = j.weather?.[0]?.id ?? 800;
+      tempEl.textContent = `${c}°`;
+      cityEl.textContent = j.name;
+      miniEl.textContent = `${desc} • feels ${feels}°  • ${Math.round(j.main.humidity)}% humidity`;
+      iconEl.textContent = iconFor(code);
+    }
+
+    function askCity(){
+      const city = prompt('Enter city name (e.g., Kolkata):', localStorage.getItem('lastCity') || '');
+      if(city) fetchWeatherByCity(city).catch(()=> alert('Could not get weather for that city.'));
+    }
+
+    changeCityBtn.addEventListener('click', askCity);
+
+    async function initWeather(){
+      if(API_KEY.includes('PUT_YOUR')){ // key not set
+        cityEl.textContent = 'Add your OpenWeatherMap key';
+        miniEl.textContent = 'Tap "Set City" to use manual city mode.';
+        return;
+      }
+      const saved = localStorage.getItem('lastCity');
+      if(saved) { fetchWeatherByCity(saved).catch(console.warn); }
+
+      if(navigator.geolocation){
+        navigator.geolocation.getCurrentPosition(
+          pos => fetchWeatherByCoords(pos.coords.latitude, pos.coords.longitude).catch(()=>{}),
+          err => { if(!saved) cityEl.textContent = 'Location blocked. Tap Set City'; },
+          { enableHighAccuracy:false, timeout:8000, maximumAge:600000 }
+        );
+      }else{
+        if(!saved) cityEl.textContent = 'No geolocation. Tap Set City';
+      }
+    }
+    initWeather();
+
+    /* ------------------ ENTRANCE ANIMATIONS ------------------ */
+    window.addEventListener('load', () => {
+      gsap.from('#topbar', {y:-30, opacity:0, duration:.6, ease:'power3.out'});
+      gsap.from('.card', {y:24, opacity:0, duration:.7, ease:'power3.out', stagger:.08, delay:.05});
+      gsap.from('#dock a', {y:20, opacity:0, duration:.5, ease:'power3.out', stagger:.05, delay:.2});
+    });
+  </script>
+</body>
+</html>
